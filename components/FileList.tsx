@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileCode, ArrowUp, ArrowDown, X, GripVertical } from 'lucide-react';
+import { FileCode, ArrowUp, ArrowDown, Trash2, GripVertical } from 'lucide-react';
 import { FileData } from '../types';
 
 interface FileListProps {
@@ -108,9 +108,9 @@ export const FileList: React.FC<FileListProps> = ({ files, onMoveUp, onMoveDown,
                 <button
                   onClick={() => onRemove(index)}
                   class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                  title="حذف"
+                  title="حذف فایل"
                 >
-                  <X size={16} />
+                  <Trash2 size={16} />
                 </button>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Settings, ChevronDown, ChevronUp } from 'lucide-react';
+import JSZip from 'jszip';
 import { Header } from './components/Header';
 import { FileUploader } from './components/FileUploader';
 import { ResultViewer } from './components/ResultViewer';
@@ -32,36 +33,80 @@ const App: React.FC = () => {
 
   const processFiles = useCallback(async (files: FileList | File[]) => {
     setIsProcessing(true);
+    const newFilesList: FileData[] = [];
 
     try {
-      const filePromises = Array.from(files).map((file) => {
-        return new Promise<FileData>((resolve, reject) => {
-          const reader = new FileReader();
-          
-          reader.onload = (event) => {
-            const result = event.target?.result;
-            if (typeof result === 'string') {
-              resolve({ name: file.name, content: result });
-            } else {
-              resolve({ name: file.name, content: '[Error reading file]' });
+      const fileArray = Array.from(files);
+
+      for (const file of fileArray) {
+        // Check for ZIP file by extension or MIME type
+        if (file.name.toLowerCase().endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed') {
+          try {
+            const zip = new JSZip();
+            const loadedZip = await zip.loadAsync(file);
+
+            // Iterate through all files in the zip
+            for (const [relativePath, zipEntry] of Object.entries(loadedZip.files)) {
+              // Cast zipEntry to any because Object.entries might infer it as unknown depending on TS config/version
+              const entry = zipEntry as any;
+
+              // Skip directories
+              if (entry.dir) continue;
+              
+              // Skip macOS system files
+              if (relativePath.includes('__MACOSX') || relativePath.includes('.DS_Store')) continue;
+
+              try {
+                // Read content as string
+                const content = await entry.async("string");
+                newFilesList.push({
+                  name: relativePath, // Uses the full path inside the zip (e.g., src/components/App.tsx)
+                  content: content
+                });
+              } catch (err) {
+                console.warn(`Failed to read content of ${relativePath} inside zip`, err);
+                newFilesList.push({
+                  name: relativePath,
+                  content: `[Error reading file content inside zip]`
+                });
+              }
             }
-          };
-
-          reader.onerror = () => reject(reader.error);
-          reader.readAsText(file);
-        });
-      });
-
-      const newResults = await Promise.all(filePromises);
+          } catch (err) {
+            console.error("Error unzipping file:", err);
+            newFilesList.push({
+              name: file.name,
+              content: `[Error: Failed to unzip file]`
+            });
+          }
+        } else {
+          // Process regular single file
+          try {
+            const content = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                const result = event.target?.result;
+                resolve(typeof result === 'string' ? result : '');
+              };
+              reader.onerror = () => reject(reader.error);
+              reader.readAsText(file);
+            });
+            
+            newFilesList.push({ name: file.name, content });
+          } catch (err) {
+            console.error(`Error reading file ${file.name}:`, err);
+            newFilesList.push({ name: file.name, content: '[Error reading file]' });
+          }
+        }
+      }
       
       setFilesData((prevFiles) => {
         // Append new files to the existing list instead of replacing
-        return [...prevFiles, ...newResults];
+        return [...prevFiles, ...newFilesList];
       });
 
     } catch (error) {
-      console.error("Error processing files:", error);
-      alert("مشکلی در خواندن فایل‌ها پیش آمد. لطفا دوباره تلاش کنید.");
+      console.error("Global error processing files:", error);
+      alert("مشکلی در پردازش فایل‌ها پیش آمد.");
     } finally {
       setIsProcessing(false);
     }
@@ -111,7 +156,8 @@ const App: React.FC = () => {
           <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">شروع کنید</h2>
             <p class="text-gray-600">
-              فایل‌های پروژه خود را انتخاب کنید تا محتوای همه آنها در یک متن واحد جمع‌آوری شود. با آپلود فایل‌های جدید، آنها به انتهای لیست فعلی اضافه می‌شوند.
+              فایل‌های پروژه یا فایل <span class="font-mono bg-gray-100 px-1 rounded">.zip</span> خود را آپلود کنید. 
+              در صورت آپلود Zip، ساختار پوشه‌ها در نام فایل حفظ می‌شود.
             </p>
           </div>
 
@@ -162,7 +208,7 @@ const App: React.FC = () => {
         {isProcessing && (
           <div class="flex flex-col items-center justify-center py-12">
             <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-            <p class="text-indigo-600 font-medium">در حال پردازش فایل‌ها...</p>
+            <p class="text-indigo-600 font-medium">در حال پردازش و استخراج فایل‌ها...</p>
           </div>
         )}
 

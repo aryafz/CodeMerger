@@ -91,6 +91,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected, isP
           class="hidden"
           onChange={handleChange}
           disabled={isProcessing}
+          // Accept common code extensions and zip
+          accept=".js,.jsx,.ts,.tsx,.py,.java,.c,.cpp,.h,.cs,.go,.rs,.php,.html,.css,.json,.xml,.sql,.md,.txt,.zip,.yaml,.yml"
         />
         
         <div class="flex flex-col items-center text-center p-4">
@@ -98,7 +100,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected, isP
             <UploadCloud size={32} />
           </div>
           <h3 class="text-lg font-semibold text-gray-700 mb-1">
-            فایل‌ها را اینجا رها کنید
+            فایل‌ها یا <span class="text-indigo-600">Zip</span> را اینجا رها کنید
           </h3>
           <div class="flex items-center gap-1.5 text-sm text-gray-500">
              <span class="text-indigo-600 font-medium">کلیک کنید</span>
@@ -109,7 +111,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected, isP
              <span> کنید</span>
           </div>
           <p class="text-xs text-gray-400 mt-3">
-            (js, tsx, py, html, css, json, ...)
+            (js, tsx, py, html, css, json, ..., zip)
           </p>
         </div>
       </div>
