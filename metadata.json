@@ -1,0 +1,5 @@
+{
+  "name": "CodeMerger Farsi",
+  "description": "A utility tool to merge multiple code files into a single text file, optimized for copying context to LLMs.",
+  "requestFramePermissions": []
+}
