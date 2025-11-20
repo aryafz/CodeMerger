@@ -3,11 +3,8 @@ import { Settings, ChevronDown, ChevronUp } from 'lucide-react';
 import { Header } from './components/Header';
 import { FileUploader } from './components/FileUploader';
 import { ResultViewer } from './components/ResultViewer';
-
-interface FileData {
-  name: string;
-  content: string;
-}
+import { FileList } from './components/FileList';
+import { FileData } from './types';
 
 const DEFAULT_TEMPLATE = `================================================================================
 File: {fileName}
@@ -74,6 +71,37 @@ const App: React.FC = () => {
     setFilesData([]);
   };
 
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    setFilesData(prev => {
+      const newFiles = [...prev];
+      [newFiles[index - 1], newFiles[index]] = [newFiles[index], newFiles[index - 1]];
+      return newFiles;
+    });
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index === filesData.length - 1) return;
+    setFilesData(prev => {
+      const newFiles = [...prev];
+      [newFiles[index + 1], newFiles[index]] = [newFiles[index], newFiles[index + 1]];
+      return newFiles;
+    });
+  };
+
+  const handleReorder = (fromIndex: number, toIndex: number) => {
+    setFilesData((prev) => {
+      const newFiles = [...prev];
+      const [movedItem] = newFiles.splice(fromIndex, 1);
+      newFiles.splice(toIndex, 0, movedItem);
+      return newFiles;
+    });
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFilesData(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div class="min-h-screen flex flex-col bg-gray-50 font-sans">
       <Header />
@@ -136,6 +164,16 @@ const App: React.FC = () => {
             <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
             <p class="text-indigo-600 font-medium">در حال پردازش فایل‌ها...</p>
           </div>
+        )}
+
+        {!isProcessing && filesData.length > 0 && (
+          <FileList 
+            files={filesData}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
+            onReorder={handleReorder}
+            onRemove={handleRemoveFile}
+          />
         )}
 
         {!isProcessing && mergedContent && (

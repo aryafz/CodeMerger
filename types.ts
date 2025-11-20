@@ -8,3 +8,8 @@ export interface UploadedFile {
 export interface MergeOptions {
   headerTemplate: string;
 }
+
+export interface FileData {
+  name: string;
+  content: string;
+}
