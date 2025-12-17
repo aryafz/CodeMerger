@@ -62,11 +62,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected, isP
   };
 
   return (
-    <div class="w-full mb-8">
+    <div className="w-full mb-8">
       <div
         tabIndex={0}
         onPaste={handlePaste}
-        class={`relative group w-full h-48 flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+        className={`relative group w-full h-48 flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
           ${dragActive 
             ? "border-indigo-500 bg-indigo-50 scale-[1.01]" 
             : "border-gray-300 bg-white hover:border-indigo-400 hover:bg-gray-50"
@@ -88,29 +88,29 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFilesSelected, isP
           ref={inputRef}
           type="file"
           multiple
-          class="hidden"
+          className="hidden"
           onChange={handleChange}
           disabled={isProcessing}
           // Accept common code extensions and zip
           accept=".js,.jsx,.ts,.tsx,.py,.java,.c,.cpp,.h,.cs,.go,.rs,.php,.html,.css,.json,.xml,.sql,.md,.txt,.zip,.yaml,.yml"
         />
         
-        <div class="flex flex-col items-center text-center p-4">
-          <div class={`p-3 rounded-full mb-3 transition-colors duration-200 ${dragActive ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'}`}>
+        <div className="flex flex-col items-center text-center p-4">
+          <div className={`p-3 rounded-full mb-3 transition-colors duration-200 ${dragActive ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-100 text-gray-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'}`}>
             <UploadCloud size={32} />
           </div>
-          <h3 class="text-lg font-semibold text-gray-700 mb-1">
-            فایل‌ها یا <span class="text-indigo-600">Zip</span> را اینجا رها کنید
+          <h3 className="text-lg font-semibold text-gray-700 mb-1">
+            فایل‌ها یا <span className="text-indigo-600">Zip</span> را اینجا رها کنید
           </h3>
-          <div class="flex items-center gap-1.5 text-sm text-gray-500">
-             <span class="text-indigo-600 font-medium">کلیک کنید</span>
+          <div className="flex items-center gap-1.5 text-sm text-gray-500">
+             <span className="text-indigo-600 font-medium">کلیک کنید</span>
              <span> یا محتوا را </span>
-             <span class="inline-flex items-center gap-1 bg-gray-100 px-1.5 py-0.5 rounded text-xs border border-gray-200 font-mono text-gray-600">
+             <span className="inline-flex items-center gap-1 bg-gray-100 px-1.5 py-0.5 rounded text-xs border border-gray-200 font-mono text-gray-600">
                <Clipboard size={12} /> Ctrl+V
              </span>
              <span> کنید</span>
           </div>
-          <p class="text-xs text-gray-400 mt-3">
+          <p className="text-xs text-gray-400 mt-3">
             (js, tsx, py, html, css, json, ..., zip)
           </p>
         </div>
